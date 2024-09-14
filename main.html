@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Doku Learn - Aprenda Japonês</title>
+    <title>Doku Learn - Inicio</title>
+    <link rel="icon" href="favicon.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=tkoDczsm"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4715324903104310"
+     crossorigin="anonymous"></script>
     <style>
         :root {
             --primary-color: #FF4B3E;
@@ -369,7 +372,7 @@
         function shareWord(romaji) {
     const word = effectiveWords.find(w => w.romaji === romaji);
     const shareText = `Aprenda a palavra japonesa: ${word.romaji} - ${word.japanese} (${word.portuguese})`;
-    const shareUrl = 'www.DokuLeran.com';
+    const shareUrl = window.location.href;
 
     if (navigator.share) {
         navigator.share({
