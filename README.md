@@ -3,60 +3,60 @@
 ```markdown
 # Doku-Learn
 
-Doku-Learn é uma plataforma educacional simples projetada para ajudar os usuários a aprender japonês. O site oferece funcionalidades para ouvir textos, praticar a escrita e explorar uma interface amigável. Além disso, o projeto inclui uma versão em APK disponível no repositório.
+Doku-Learn is a simple educational platform designed to help users learn Japanese. The site offers features to listen to texts, practice writing, and explore a user-friendly interface. Additionally, the project includes an APK version available in the repository.
 
-## Funcionalidades
+## Features
 
-- **Ouvir Textos**: Acompanhe e ouça a pronúncia correta dos textos em japonês.
-- **Praticar Escrita**: Exercite a escrita dos caracteres japoneses com feedback.
-- **Interface Simples**: Navegação intuitiva e fácil de usar para um aprendizado eficiente.
+- **Listen to Texts**: Follow along and listen to the correct pronunciation of Japanese texts.
+- **Practice Writing**: Practice writing Japanese characters with feedback.
+- **Simple Interface**: Intuitive and easy-to-use navigation for effective learning.
 
-## Instalação
+## Installation
 
-### Site
+### Website
 
-Para acessar a versão web do Doku-Learn, basta visitar (https://doku-learn.netlify.app).
+To access the web version of Doku-Learn, visit [https://doku-learn.netlify.app](https://doku-learn.netlify.app).
 
 ### APK
 
-1. **Clone o repositório:**
+1. **Clone the repository:**
 
    ```bash
    git clone https://github.com/NetoFilho/Doku-Learn.git
    ```
 
-2. **Navegue até o diretório do projeto:**
+2. **Navigate to the project directory:**
 
    ```bash
    cd Doku-Learn
    ```
 
-3. **Encontre o arquivo APK na pasta `apk/` do repositório.**
+3. **Find the APK file in the `apk/` folder of the repository.**
 
-4. **Instale o APK em seu dispositivo Android.**
+4. **Install the APK on your Android device.**
 
-## Uso
+## Usage
 
-Após instalar o aplicativo ou acessar o site, você pode começar a usar as seguintes funcionalidades:
+After installing the app or accessing the website, you can start using the following features:
 
-- Ouça os textos em japonês clicando no botão de áudio.
-- Pratique a escrita através das ferramentas interativas.
-- Navegue facilmente pela interface para explorar o conteúdo disponível.
+- Listen to Japanese texts by clicking the audio button.
+- Practice writing using the interactive tools.
+- Easily navigate the interface to explore the available content.
 
-## Dependências
+## Dependencies
 
-- **Google AdSense**: Para exibição de anúncios.
-- **Responsivevoice**: Para funcionalidades de reconhecimento de fala.
+- **Google AdSense**: For displaying ads.
+- **ResponsiveVoice**: For speech recognition functionality.
 
-Certifique-se de que estas dependências estão configuradas corretamente para o pleno funcionamento do site e do aplicativo.
+Ensure these dependencies are properly configured for the full functionality of the website and the app.
 
-## Contato
+## Contact
 
-Para dúvidas, sugestões ou suporte, entre em contato com o mantenedor do projeto:
+For questions, suggestions, or support, please contact the project maintainer:
 
 - **Email**: [kbam2024br@gmail.com](mailto:kbam2024br@gmail.com)
 
-## Licença
+## License
 
-Este projeto está licenciado sob a [Licença XYZ](LICENCA.md) - veja o arquivo `LICENCA.md` para mais detalhes.
+This project is licensed under the [XYZ License](LICENSE.md) - see the `LICENSE.md` file for details.
 ```
