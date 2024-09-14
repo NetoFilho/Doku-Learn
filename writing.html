@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aprenda a Escrever Japonês</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=tkoDczsm"></script>
+    <style>
+        :root {
+            --primary-color: #FF4B3E;
+            --primary-variant: #3700B3;
+            --secondary-color: #FF4B3E;
+            --background-color: #F4F4F4;
+            --surface-color: #FFFFFF;
+            --error-color: #B00020;
+            --on-primary: #FFFFFF;
+            --on-secondary: #000000;
+            --on-background: #000000;
+            --on-surface: #000000;
+            --on-error: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--on-background);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent; /* Remove o efeito de destaque ao tocar */
+        }
+
+        .app-bar {
+            background-color: var(--primary-color);
+            color: var(--on-primary);
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            height: 56px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .app-bar-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-left: 32px;
+        }
+
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .character-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        #japanese-char {
+            font-size: 72px;
+            font-weight: 700;
+            margin-right: 16px;
+            font-family: 'Sawarabi Mincho', sans-serif;
+        }
+
+        #romanized-char {
+            font-size: 24px;
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        #canvas-container {
+            flex-grow: 1;
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #canvas {
+            display: block;
+            background-color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+
+        #guide-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px 0;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background-color: var(--secondary-color);
+            color: var(--on-secondary);
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .fab:active {
+            box-shadow: 0 6px 10px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .fab i {
+            font-size: 24px;
+        }
+
+        #play-audio {
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-bar">
+        <i class="material-icons" id="back-btn">arrow_back</i>
+        <span class="app-bar-title">Escrever</span>
+    </div>
+    
+    <div class="content">
+        <div class="character-display">
+            <span id="japanese-char">て</span>
+            <span id="romanized-char">te</span>
+        </div>
+        
+        <div id="canvas-container">
+            <canvas id="canvas"></canvas>
+            <svg id="guide-lines"></svg>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="fab" id="change-char" aria-label="Mudar caractere">
+                <i class="material-icons">shuffle</i>
+            </button>
+            <button class="fab" id="play-audio" aria-label="Ouvir pronúncia">
+                <i class="material-icons">volume_up</i>
+            </button>
+            <button class="fab" id="undo" aria-label="Desfazer">
+                <i class="material-icons">undo</i>
+            </button>
+            <button class="fab" id="redo" aria-label="Refazer">
+                <i class="material-icons">redo</i>
+            </button>
+            <button class="fab" id="clear" aria-label="Limpar">
+                <i class="material-icons">delete</i>
+            </button>
+        </div>
+    </div>
+
+    <script src="character.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const changeCharBtn = document.getElementById('change-char');
+        const playAudioBtn = document.getElementById('play-audio');
+        const undoBtn = document.getElementById('undo');
+        const redoBtn = document.getElementById('redo');
+        const clearBtn = document.getElementById('clear');
+        const backBtn = document.getElementById('back-btn');
+        const guideLines = document.getElementById('guide-lines');
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let lastTime = 0;
+        let history = [];
+        let step = -1;
+        let currentChar = null;
+
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            redrawCanvas();
+            drawGuideLines();
+        }
+
+        function drawGuideLines() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const cellSize = Math.min(width, height) * 0.8;
+
+            guideLines.innerHTML = `
+                <line x1="${width/2}" y1="${(height-cellSize)/2}" x2="${width/2}" y2="${(height+cellSize)/2}" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+                <line x1="${(width-cellSize)/2}" y1="${height/2}" x2="${(width+cellSize)/2}" y2="${height/2}" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+                <rect x="${(width-cellSize)/2}" y="${(height-cellSize)/2}" width="${cellSize}" height="${cellSize}" stroke="rgba(0,0,0,0.1)" stroke-width="1" fill="none"/>
+            `;
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = getCoordinates(e);
+            lastTime = Date.now();
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const [currentX, currentY] = getCoordinates(e);
+            const currentTime = Date.now();
+            const velocity = getVelocity(lastX, lastY, currentX, currentY, lastTime, currentTime);
+            const pressure = e.pressure || 0.7;
+            const lineWidth = getLineWidth(velocity, pressure);
+
+            ctx.lineWidth = lineWidth;
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+
+            lastX = currentX;
+            lastY = currentY;
+            lastTime = currentTime;
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.stroke();
+                saveState();
+            }
+        }
+
+        function getCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            if (e.touches && e.touches[0]) {
+                return [
+                    (e.touches[0].clientX - rect.left) * scaleX,
+                    (e.touches[0].clientY - rect.top) * scaleY
+                ];
+            } else {
+                return [
+                    (e.clientX - rect.left) * scaleX,
+                    (e.clientY - rect.top) * scaleY
+                ];
+            }
+        }
+
+        function getVelocity(x1, y1, x2, y2, t1, t2) {
+            const distance = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            const time = t2 - t1;
+            return distance / time;
+        }
+
+        function getLineWidth(velocity, pressure) {
+            const maxWidth = 20;
+            const minWidth = 5;
+            const velocityFactor = Math.max(0, 1 - velocity / 5);
+            return minWidth + (maxWidth - minWidth) * velocityFactor * pressure;
+        }
+
+        function saveState() {
+            step++;
+            if (step < history.length) {
+                history.length = step;
+            }
+            history.push(canvas.toDataURL());
+        }
+
+        function undo() {
+            if (step > 0) {
+                step--;
+                redrawCanvas();
+            }
+        }
+
+        function redo() {
+            if (step < history.length - 1) {
+                step++;
+                redrawCanvas();
+            }
+        }
+
+        function redrawCanvas() {
+            const img = new Image();
+            img.src = history[step];
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveState();
+        }
+
+        function changeCharacter() {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            currentChar = characters[randomIndex];
+            document.getElementById('japanese-char').textContent = currentChar.char;
+            document.getElementById('romanized-char').textContent = currentChar.romaji;
+            clearCanvas();
+        }
+
+        function playAudio(index) {
+    const textElement = document.getElementById(`japanese-char`);
+    
+    if (textElement) {
+        const text = textElement.textContent;
+
+        if (responsiveVoice) {
+            // Selecionar o texto dentro do elemento
+            const range = document.createRange();
+            range.selectNodeContents(textElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            responsiveVoice.speak(text, "Japanese Male", {
+                onstart: function() {
+                    console.log("Iniciando a reprodução de: " + text);
+                    window.getSelection().removeAllRanges();
+                },
+                onend: function() {
+                    console.log("Reprodução concluída.");
+                    // Remover a seleção imediatamente após a reprodução
+                    window.getSelection().removeAllRanges();
+                },
+                onerror: function(event) {
+                    console.log('Erro ao reproduzir a fala:', event);
+                    // Remover a seleção em caso de erro
+                    window.getSelection().removeAllRanges();
+                }
+            });
+        } else {
+            console.log('ResponsiveVoice não está disponível.');
+        }
+    } else {
+        console.log('Texto não encontrado para reprodução.');
+    }
+}
+
+        window.addEventListener('resize', resizeCanvas);
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+
+        changeCharBtn.addEventListener('click', changeCharacter);
+        playAudioBtn.addEventListener('click', playAudio);
+        undoBtn.addEventListener('click', undo);
+        redoBtn.addEventListener('click', redo);
+        clearBtn.addEventListener('click', clearCanvas);
+        backBtn.addEventListener('click', () => window.history.back());
+
+        // Inicialização
+        resizeCanvas();
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'black';
+        saveState();
+        changeCharacter();
+    </script>
+</body>
+</html>

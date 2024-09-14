@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Doku Learn - Aprenda Japonês</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=tkoDczsm"></script>
+    <style>
+        :root {
+            --primary-color: #FF4B3E;
+            --secondary-color: #254E70;
+            --accent-color: #FECA47;
+            --background-color: #F4F4F4;
+            --text-color: #333;
+            --card-background: #FFFFFF;
+            --checked-color: #4A90E2;
+        }
+        
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Remove o efeito de destaque ao tocar */
+            touch-action: manipulation; /* Permite manipulações e não zoom */
+        }
+
+       body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-tap-highlight-color: transparent; /* Remove o efeito de destaque ao tocar */
+            user-select: auto; /* Desativa a seleção de texto */
+            touch-action: manipulation; /* Evita zoom no toque prolongado */
+        }
+
+        .app-container {
+            padding-top: 80px;
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            z-index: 1000;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--checked-color);
+        }
+
+        .search-bar {
+            display: flex;
+            flex-grow: 1;
+            margin-right: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 25px;
+            overflow: hidden;
+        }
+
+        .search-bar input {
+            flex-grow: 1;
+            padding: 12px 20px;
+            border: none;
+            font-size: 16px;
+            min-width: 0;
+            -webkit-appearance: none;
+        }
+
+        .search-bar button {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #1D3E5A;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--accent-color);
+            margin-right: 10px;
+            padding: 8px;
+        }
+
+        .word-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .word-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        .word-card:active {
+            transform: scale(0.98);
+        }
+
+        .word-card.checked {
+            background-color: var(--checked-color);
+            color: white;
+        }
+
+        .romaji {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-card.checked .romaji {
+            color: white;
+        }
+
+        .audio-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--accent-color);
+            padding: 8px;
+        }
+
+        .word-card.checked .audio-btn {
+            color: white;
+        }
+
+        .japanese {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            min-height: 36px;
+            font-family: 'Sawarabi Mincho', sans-serif;
+        }
+
+        .word-card.checked .japanese {
+            color: var(--accent-color);
+        }
+
+        .portuguese {
+            font-size: 18px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .word-card.checked .portuguese {
+            color: white;
+        }
+
+        .show-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            margin-top: auto;
+        }
+
+        .show-btn:active {
+            background-color: #E5B541;
+        }
+
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 10px;
+        }
+
+        .category-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .category-btn.active {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        #backToTopBtn {
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 255, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        #backToTopBtn:active {
+            background-color: rgba(0, 0, 255, 0.7);
+        }
+
+        @media (max-width: 768px) {
+            .word-list {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .search-bar input {
+                font-size: 14px;
+            }
+
+            .icon-btn {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div>
+                <button class="icon-btn" onclick="window.location.href='history.html'"><i class="fas fa-book"></i></button>
+                <button class="icon-btn" onclick="window.location.href='favorite.html'"><i class="fas fa-heart"></i></button>
+                <button class="icon-btn" onclick="window.location.href='writing.html'"><i class="fas fa-pencil"></i></button>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Pesquisar palavra...">
+                <button onclick="searchWords()"><i class="fas fa-search"></i></button>
+            </div>
+        </header>
+
+        <div class="category-filter" id="categoryFilter"></div>
+
+        <div id="wordList" class="word-list"></div>
+    </div>
+    
+    <button id="backToTopBtn" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="palavras.js"></script>
+    <script>
+        const wordList = document.getElementById('wordList');
+        const categoryFilter = document.getElementById('categoryFilter');
+        let currentCategory = 'todas';
+        let checkedWords = JSON.parse(localStorage.getItem('checkedWords')) || {};
+        let favoriteWords = JSON.parse(localStorage.getItem('favoriteWords')) || {};
+        let currentIndex = 0;
+        const wordsPerPage = 50;
+
+        // Adicione esta variável para armazenar as palavras filtradas
+        let filteredWords = [];
+
+        const effectiveWords = (typeof words !== 'undefined' && words.length > 0) ? words : [
+            { romaji: 'konnichiwa', japanese: 'こんにちは', portuguese: 'Olá', category: 'saudações' }
+        ];
+
+   function renderWords(wordsToRender) {
+    const endIndex = Math.min(currentIndex + wordsPerPage, wordsToRender.length);
+    const wordsSlice = wordsToRender.slice(currentIndex, endIndex);
+
+    const fragment = document.createDocumentFragment();
+
+    wordsSlice.forEach((word, localIndex) => {
+        const globalIndex = currentIndex + localIndex; // Usar o índice global
+
+        const wordCard = document.createElement('div');
+        wordCard.className = `word-card ${checkedWords[word.romaji] ? 'checked' : ''}`;
+        wordCard.innerHTML = `
+            <div class="romaji" id="romaji-${globalIndex}">
+                ${word.romaji}
+               <button class="audio-btn" onclick="playAudio(${globalIndex})">
+                    <i class="fas fa-volume-up"></i>
+                </button>
+                <button class="icon-btn" onclick="toggleFavorite('${word.romaji}', this)">
+                    <i class="fas ${favoriteWords[word.romaji] ? 'fa-heart' : 'fa-heart-broken'}"></i>
+                </button>
+                <button class="icon-btn" onclick="shareWord('${word.romaji}')">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            </div>
+            <div class="japanese" id="japanese-${globalIndex}">${checkedWords[word.romaji] ? word.japanese : ''}</div>
+            <div class="portuguese" id="portuguese-${globalIndex}">${checkedWords[word.romaji] ? word.portuguese : ''}</div>
+            <button class="show-btn" onclick="toggleJapanese('${word.romaji}', this)">
+                ${checkedWords[word.romaji] ? 'Ocultar' : 'Mostrar Japonês'}
+            </button>
+        `;
+        fragment.appendChild(wordCard);
+    });
+
+    wordList.appendChild(fragment);
+}
+
+        function toggleJapanese(romaji, button) {
+            const wordCard = button.closest('.word-card');
+            const japaneseElement = wordCard.querySelector('.japanese');
+            const portugueseElement = wordCard.querySelector('.portuguese');
+            const word = effectiveWords.find(w => w.romaji === romaji);
+            
+            if (!checkedWords[romaji]) {
+                japaneseElement.textContent = word.japanese;
+                portugueseElement.textContent = word.portuguese;
+                button.textContent = 'Ocultar';
+                wordCard.classList.add('checked');
+                checkedWords[romaji] = true;
+            } else {
+                japaneseElement.textContent = '';
+                portugueseElement.textContent = '';
+                button.textContent = 'Mostrar Japonês';
+                wordCard.classList.remove('checked');
+                delete checkedWords[romaji];
+            }
+            localStorage.setItem('checkedWords', JSON.stringify(checkedWords));
+        }
+
+        function toggleFavorite(romaji, button) {
+            if (favoriteWords[romaji]) {
+                delete favoriteWords[romaji];
+            } else {
+                favoriteWords[romaji] = true;
+            }
+            button.querySelector('i').className = favoriteWords[romaji] ? 'fas fa-heart' : 'fas fa-heart-broken';
+            localStorage.setItem('favoriteWords', JSON.stringify(favoriteWords));
+        }
+
+        function shareWord(romaji) {
+    const word = effectiveWords.find(w => w.romaji === romaji);
+    const shareText = `Aprenda a palavra japonesa: ${word.romaji} - ${word.japanese} (${word.portuguese})`;
+    const shareUrl = 'www.DokuLeran.com';
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Aprendendo Japonês',
+            text: shareText,
+            url: shareUrl
+        }).catch(error => {
+            console.error('Erro ao compartilhar:', error);
+            fallbackShare(shareText, shareUrl);
+        });
+    } else {
+        fallbackShare(shareText, shareUrl);
+    }
+}
+
+function fallbackShare(text, url) {
+    // Cria um elemento de texto temporário
+    const tempInput = document.createElement('textarea');
+    tempInput.value = `${text}\n\n${url}`;
+    document.body.appendChild(tempInput);
+
+    // Seleciona e copia o texto
+    tempInput.select();
+    document.execCommand('copy');
+
+    // Remove o elemento temporário
+    document.body.removeChild(tempInput);
+
+    // Cria opções de compartilhamento alternativas
+    const shareOptions = [];
+
+    if (navigator.clipboard) {
+        shareOptions.push('Copiar para a área de transferência');
+    }
+
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        shareOptions.push('Compartilhar via WhatsApp');
+    }
+
+    shareOptions.push('Compartilhar via E-mail');
+
+    // Cria um prompt personalizado para o usuário escolher como compartilhar
+    const choice = prompt(`Escolha como compartilhar:\n${shareOptions.map((option, index) => `${index + 1}. ${option}`).join('\n')}`);
+
+    switch (choice) {
+        case '1':
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(`${text}\n\n${url}`)
+                    .then(() => alert('Texto copiado para a área de transferência!'))
+                    .catch(err => {
+                        console.error('Erro ao copiar texto: ', err);
+                        alert('Não foi possível copiar o texto automaticamente. Por favor, copie manualmente.');
+                    });
+            } else {
+                alert('Texto copiado para a área de transferência!');
+            }
+            break;
+        case '2':
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                window.open(`whatsapp://send?text=${encodeURIComponent(`${text}\n\n${url}`)}`);
+            }
+            break;
+        case '3':
+            window.open(`mailto:?subject=Aprendendo Japonês&body=${encodeURIComponent(`${text}\n\n${url}`)}`);
+            break;
+        default:
+            alert('Opção inválida ou compartilhamento cancelado.');
+    }
+}
+
+
+        function searchWords() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            filteredWords = effectiveWords.filter(word => 
+                (word.romaji.toLowerCase().includes(searchTerm) || 
+                word.japanese.includes(searchTerm) ||
+                word.portuguese.toLowerCase().includes(searchTerm)) &&
+                (currentCategory === 'todas' || word.category === currentCategory)
+            );
+            currentIndex = 0;
+            wordList.innerHTML = '';
+            renderWords(filteredWords);
+        }
+
+        function initializeCategoryFilter() {
+            const categories = ['todas', ...new Set(effectiveWords.map(word => word.category))];
+            const fragment = document.createDocumentFragment();
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = 'category-btn';
+                button.textContent = category;
+                button.onclick = (event) => filterByCategory(event, category);
+                fragment.appendChild(button);
+            });
+            categoryFilter.appendChild(fragment);
+            categoryFilter.firstElementChild.classList.add('active');
+        }
+
+        function filterByCategory(event, category) {
+            currentCategory = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            filteredWords = category === 'todas' ? effectiveWords : effectiveWords.filter(word => word.category === category);
+            currentIndex = 0;
+            wordList.innerHTML = '';
+            renderWords(filteredWords);
+        }
+
+        function loadMoreWords() {
+            currentIndex += wordsPerPage;
+            if (currentIndex < filteredWords.length) {
+                renderWords(filteredWords);
+            }
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.addEventListener('click', function(event) {
+            // Encontrar o elemento de texto mais próximo
+            let closestTextElement = event.target.closest('p, span, h1, h2, h3, h4, h5, h6');
+            
+            // Se um elemento de texto for encontrado, reproduza o texto
+            if (closestTextElement) {
+                playAudio(closestTextElement.textContent.trim());
+            }
+        });
+
+function playAudio(index) {
+    const textElement = document.getElementById(`romaji-${index}`);
+    
+    if (textElement) {
+        const text = textElement.textContent;
+
+        if (responsiveVoice) {
+            // Selecionar o texto dentro do elemento
+            const range = document.createRange();
+            range.selectNodeContents(textElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            responsiveVoice.speak(text, "Japanese Male", {
+                onstart: function() {
+                    console.log("Iniciando a reprodução de: " + text);
+                    window.getSelection().removeAllRanges();
+                },
+                onend: function() {
+                    console.log("Reprodução concluída.");
+                    // Remover a seleção imediatamente após a reprodução
+                    window.getSelection().removeAllRanges();
+                },
+                onerror: function(event) {
+                    console.log('Erro ao reproduzir a fala:', event);
+                    // Remover a seleção em caso de erro
+                    window.getSelection().removeAllRanges();
+                }
+            });
+        } else {
+            console.log('ResponsiveVoice não está disponível.');
+        }
+    } else {
+        console.log('Texto não encontrado para reprodução.');
+    }
+}
+
+        let isScrolling;
+        window.addEventListener('scroll', function() {
+            clearTimeout(isScrolling);
+            isScrolling = setTimeout(function() {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+                    loadMoreWords();
+                }
+                document.getElementById('backToTopBtn').style.display = window.scrollY > 200 ? 'block' : 'none';
+            }, 66);
+        }, false);
+
+        initializeCategoryFilter();
+
+        // Inicializa a lista de palavras filtradas
+        filteredWords = effectiveWords;
+        renderWords(filteredWords);
+    </script>
+</body>
+</html>

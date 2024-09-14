@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Histórico - Doku Learn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
+    <style>
+        :root {
+            --primary-color: #FF4B3E;
+            --primary-variant: #3700B3;
+            --secondary-color: #254E70;
+            --background-color: #F4F4F4;
+            --surface-color: #FFFFFF;
+            --error-color: #B00020;
+            --on-primary: #FFFFFF;
+            --on-secondary: #000000;
+            --on-background: #000000;
+            --on-surface: #000000;
+            --on-error: #FFFFFF;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--on-background);
+            line-height: 1.5;
+        }
+
+        .app-container {
+            padding-top: 56px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-bar {
+            background-color: var(--primary-color);
+            color: var(--on-primary);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            height: 56px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .app-bar-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-left: 32px;
+        }
+        
+        .word-list {
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+        }
+
+        .word-card {
+            background-color: var(--surface-color);
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        }
+
+        .romaji {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .japanese {
+            font-size: 24px;
+            color: var(--on-surface);
+            margin: 8px 0;
+            font-family: 'Sawarabi Mincho', sans-serif;
+        }
+
+        .portuguese {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--on-primary);
+            padding: 8px;
+        }
+
+        .icon-btn:active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .material-icons {
+            font-size: 24px;
+        }
+
+        @media (min-width: 600px) {
+            .word-list {
+                padding: 16px;
+            }
+        }
+        
+        * {
+    -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-bar">
+            <button class="icon-btn" id="back-btn" aria-label="Voltar">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <span class="app-bar-title">Histórico</span>
+        </div>
+        
+        <div id="wordList" class="word-list"></div>
+    </div>
+    
+    <script>
+        const words = [
+    { romaji: 'konnichiwa', japanese: 'こんにちは', portuguese: 'Olá', category: 'saudações' },
+    { romaji: 'arigatou', japanese: 'ありがとう', portuguese: 'Obrigado', category: 'expressões' },
+    { romaji: 'sayounara', japanese: 'さようなら', portuguese: 'Adeus', category: 'saudações' },
+    { romaji: 'sumimasen', japanese: 'すみません', portuguese: 'Desculpe', category: 'expressões' },
+    { romaji: 'oishii', japanese: 'おいしい', portuguese: 'Delicioso', category: 'adjetivos' },
+    { romaji: 'watashi', japanese: 'わたし', portuguese: 'Eu', category: 'pronomes' },
+    { romaji: 'tomodachi', japanese: 'ともだち', portuguese: 'Amigo', category: 'substantivos' },
+    { romaji: 'genki', japanese: 'げんき', portuguese: 'Saudável/Bem', category: 'adjetivos' },
+    { romaji: 'ohayou', japanese: 'おはよう', portuguese: 'Bom dia', category: 'saudações' },
+    { romaji: 'konbanwa', japanese: 'こんばんは', portuguese: 'Boa noite', category: 'saudações' },
+    { romaji: 'yasashii', japanese: 'やさしい', portuguese: 'Gentil', category: 'adjetivos' },
+    { romaji: 'kawaii', japanese: 'かわいい', portuguese: 'Fofo', category: 'adjetivos' },
+    { romaji: 'hajimemashite', japanese: 'はじめまして', portuguese: 'Prazer em conhecer', category: 'expressões' },
+    { romaji: 'un', japanese: 'うん', portuguese: 'Sim', category: 'expressões' },
+    { romaji: 'iie', japanese: 'いいえ', portuguese: 'Não', category: 'expressões' },
+    { romaji: 'neko', japanese: 'ねこ', portuguese: 'Gato', category: 'substantivos' },
+    { romaji: 'inu', japanese: 'いぬ', portuguese: 'Cachorro', category: 'substantivos' },
+    { romaji: 'sakura', japanese: 'さくら', portuguese: 'Flor de cerejeira', category: 'substantivos' },
+    { romaji: 'tabemono', japanese: 'たべもの', portuguese: 'Comida', category: 'substantivos' },
+    { romaji: 'nomimono', japanese: 'のみもの', portuguese: 'Bebida', category: 'substantivos' },
+    { romaji: 'nihongo', japanese: 'にほんご', portuguese: 'Língua Japonesa', category: 'substantivos' },
+    { romaji: 'sensei', japanese: 'せんせい', portuguese: 'Professor', category: 'substantivos' },
+    { romaji: 'gakkou', japanese: 'がっこう', portuguese: 'Escola', category: 'substantivos' },
+    { romaji: 'kirei', japanese: 'きれい', portuguese: 'Bonito/Limpo', category: 'adjetivos' },
+    { romaji: 'asa', japanese: 'あさ', portuguese: 'Manhã', category: 'substantivos' },
+    { romaji: 'hiru', japanese: 'ひる', portuguese: 'Tarde', category: 'substantivos' },
+    { romaji: 'yoru', japanese: 'よる', portuguese: 'Noite', category: 'substantivos' },
+    { romaji: 'akachan', japanese: 'あかちゃん', portuguese: 'Bebê', category: 'substantivos' },
+    { romaji: 'kodomo', japanese: 'こども', portuguese: 'Criança', category: 'substantivos' },
+    { romaji: 'otona', japanese: 'おとな', portuguese: 'Adulto', category: 'substantivos' },
+    { romaji: 'kinou', japanese: 'きのう', portuguese: 'Ontem', category: 'substantivos' },
+    { romaji: 'kyou', japanese: 'きょう', portuguese: 'Hoje', category: 'substantivos' },
+    { romaji: 'ashita', japanese: 'あした', portuguese: 'Amanhã', category: 'substantivos' },
+    { romaji: 'kuruma', japanese: 'くるま', portuguese: 'Carro', category: 'substantivos' },
+    { romaji: 'jitensha', japanese: 'じてんしゃ', portuguese: 'Bicicleta', category: 'substantivos' },
+    { romaji: 'densha', japanese: 'でんしゃ', portuguese: 'Trem', category: 'substantivos' },
+    { romaji: 'hikouki', japanese: 'ひこうき', portuguese: 'Avião', category: 'substantivos' },
+    { romaji: 'umi', japanese: 'うみ', portuguese: 'Mar', category: 'substantivos' },
+    { romaji: 'yama', japanese: 'やま', portuguese: 'Montanha', category: 'substantivos' },
+    { romaji: 'kawa', japanese: 'かわ', portuguese: 'Rio', category: 'substantivos' },
+    { romaji: 'mori', japanese: 'もり', portuguese: 'Floresta', category: 'substantivos' },
+    { romaji: 'hana', japanese: 'はな', portuguese: 'Flor', category: 'substantivos' },
+    { romaji: 'ki', japanese: 'き', portuguese: 'Árvore', category: 'substantivos' },
+    { romaji: 'tenki', japanese: 'てんき', portuguese: 'Clima', category: 'substantivos' },
+    { romaji: 'ame', japanese: 'あめ', portuguese: 'Chuva', category: 'substantivos' },
+    { romaji: 'yuki', japanese: 'ゆき', portuguese: 'Neve', category: 'substantivos' },
+    { romaji: 'kaze', japanese: 'かぜ', portuguese: 'Vento', category: 'substantivos' },
+    { romaji: 'taiyou', japanese: 'たいよう', portuguese: 'Sol', category: 'substantivos' },
+    { romaji: 'tsuki', japanese: 'つき', portuguese: 'Lua', category: 'substantivos' },
+    { romaji: 'hoshi', japanese: 'ほし', portuguese: 'Estrela', category: 'substantivos' },
+    { romaji: 'natsu', japanese: 'なつ', portuguese: 'Verão', category: 'substantivos' },
+    { romaji: 'aki', japanese: 'あき', portuguese: 'Outono', category: 'substantivos' },
+    { romaji: 'fuyu', japanese: 'ふゆ', portuguese: 'Inverno', category: 'substantivos' },
+    { romaji: 'haru', japanese: 'はる', portuguese: 'Primavera', category: 'substantivos' },
+    { romaji: 'iro', japanese: 'いろ', portuguese: 'Cor', category: 'substantivos' },
+    { romaji: 'aka', japanese: 'あか', portuguese: 'Vermelho', category: 'substantivos' },
+    { romaji: 'ao', japanese: 'あお', portuguese: 'Azul', category: 'substantivos' },
+    { romaji: 'kiiro', japanese: 'きいろ', portuguese: 'Amarelo', category: 'substantivos' },
+    { romaji: 'midori', japanese: 'みどり', portuguese: 'Verde', category: 'substantivos' },
+    { romaji: 'kuro', japanese: 'くろ', portuguese: 'Preto', category: 'substantivos' },
+    { romaji: 'shiro', japanese: 'しろ', portuguese: 'Branco', category: 'substantivos' },
+    { romaji: 'haiiro', japanese: 'はいいろ', portuguese: 'Cinza', category: 'substantivos' },
+    { romaji: 'murasaki', japanese: 'むらさき', portuguese: 'Roxo', category: 'substantivos' },
+    { romaji: 'pink', japanese: 'ピンク', portuguese: 'Rosa', category: 'substantivos' },
+    { romaji: 'orenji', japanese: 'オレンジ', portuguese: 'Laranja', category: 'substantivos' },
+    { romaji: 'akai', japanese: 'あかい', portuguese: 'Vermelho', category: 'adjetivos' },
+    { romaji: 'aoi', japanese: 'あおい', portuguese: 'Azul', category: 'adjetivos' },
+    { romaji: 'kiiroi', japanese: 'きいろい', portuguese: 'Amarelo', category: 'adjetivos' },
+    { romaji: 'midori', japanese: 'みどり', portuguese: 'Verde', category: 'adjetivos' },
+    { romaji: 'kuroi', japanese: 'くろい', portuguese: 'Preto', category: 'adjetivos' },
+    { romaji: 'shiroi', japanese: 'しろい', portuguese: 'Branco', category: 'adjetivos' },
+    { romaji: 'haiiroi', japanese: 'はいいろい', portuguese: 'Cinza', category: 'adjetivos' },
+    { romaji: 'pinku', japanese: 'ピンク', portuguese: 'Rosa', category: 'adjetivos' },
+    { romaji: 'orenji', japanese: 'オレンジ', portuguese: 'Laranja', category: 'adjetivos' },
+    { romaji: 'okane', japanese: 'おかね', portuguese: 'Dinheiro', category: 'substantivos' },
+    { romaji: 'ginkou', japanese: 'ぎんこう', portuguese: 'Banco', category: 'substantivos' },
+    { romaji: 'mise', japanese: 'みせ', portuguese: 'Loja', category: 'substantivos' },
+    { romaji: 'shokuji', japanese: 'しょくじ', portuguese: 'Refeição', category: 'substantivos' },
+    { romaji: 'pan', japanese: 'パン', portuguese: 'Pão', category: 'substantivos' },
+    { romaji: 'tamago', japanese: 'たまご', portuguese: 'Ovo', category: 'substantivos' },
+    { romaji: 'sakana', japanese: 'さかな', portuguese: 'Peixe', category: 'substantivos' },
+    { romaji: 'niku', japanese: 'にく', portuguese: 'Carne', category: 'substantivos' },
+    { romaji: 'yasai', japanese: 'やさい', portuguese: 'Vegetais', category: 'substantivos' },
+    { romaji: 'kudamono', japanese: 'くだもの', portuguese: 'Frutas', category: 'substantivos' },
+    { romaji: 'mizu', japanese: 'みず', portuguese: 'Água', category: 'substantivos' },
+    { romaji: 'ocha', japanese: 'おちゃ', portuguese: 'Chá', category: 'substantivos' },
+    { romaji: 'koohii', japanese: 'コーヒー', portuguese: 'Café', category: 'substantivos' },
+    { romaji: 'gyuunyuu', japanese: 'ぎゅうにゅう', portuguese: 'Leite', category: 'substantivos' },
+    { romaji: 'biiru', japanese: 'ビール', portuguese: 'Cerveja', category: 'substantivos' },
+    { romaji: 'osake', japanese: 'おさけ', portuguese: 'Sake', category: 'substantivos' },
+    { romaji: 'gohan', japanese: 'ごはん', portuguese: 'Arroz', category: 'substantivos' },
+    { romaji: 'shio', japanese: 'しお', portuguese: 'Sal', category: 'substantivos' },
+    { romaji: 'koshou', japanese: 'こしょう', portuguese: 'Pimenta', category: 'substantivos' },
+    { romaji: 'shouyu', japanese: 'しょうゆ', portuguese: 'Molho de soja', category: 'substantivos' },
+    { romaji: 'kome', japanese: 'こめ', portuguese: 'Arroz (grão)', category: 'substantivos' },
+    { romaji: 'wasabi', japanese: 'わさび', portuguese: 'Wasabi', category: 'substantivos' },
+    { romaji: 'nori', japanese: 'のり', portuguese: 'Alga', category: 'substantivos' },
+    { romaji: 'sushi', japanese: 'すし', portuguese: 'Sushi', category: 'substantivos' },
+    { romaji: 'tenpura', japanese: 'てんぷら', portuguese: 'Tempura', category: 'substantivos' },
+    { romaji: 'udon', japanese: 'うどん', portuguese: 'Udon', category: 'substantivos' },
+    { romaji: 'soba', japanese: 'そば', portuguese: 'Soba', category: 'substantivos' },
+    { romaji: 'ramen', japanese: 'ラーメン', portuguese: 'Lamen', category: 'substantivos' },
+    { romaji: 'okonomiyaki', japanese: 'お好み焼き', portuguese: 'Okonomiyaki', category: 'substantivos' },
+    { romaji: 'takoyaki', japanese: 'たこ焼き', portuguese: 'Takoyaki', category: 'substantivos' },
+    { romaji: 'nabe', japanese: '鍋', portuguese: 'Nabe', category: 'substantivos' },
+    { romaji: 'mochi', japanese: 'もち', portuguese: 'Mochi', category: 'substantivos' },
+    { romaji: 'dango', japanese: '団子', portuguese: 'Dango', category: 'substantivos' },
+    { romaji: 'ueno', japanese: '上野', portuguese: 'Ueno', category: 'substantivos' },
+    { romaji: 'shibuya', japanese: '渋谷', portuguese: 'Shibuya', category: 'substantivos' },
+    { romaji: 'shinjuku', japanese: '新宿', portuguese: 'Shinjuku', category: 'substantivos' },
+    { romaji: 'asakusa', japanese: '浅草', portuguese: 'Asakusa', category: 'substantivos' },
+    { romaji: 'ginza', japanese: '銀座', portuguese: 'Ginza', category: 'substantivos' },
+    { romaji: 'akihabara', japanese: '秋葉原', portuguese: 'Akihabara', category: 'substantivos' },
+    { romaji: 'harajuku', japanese: '原宿', portuguese: 'Harajuku', category: 'substantivos' },
+    { romaji: 'roppongi', japanese: '六本木', portuguese: 'Roppongi', category: 'substantivos' },
+    { romaji: 'odaiba', japanese: 'お台場', portuguese: 'Odaiba', category: 'substantivos' },
+    { romaji: 'tsukiji', japanese: '築地', portuguese: 'Tsukiji', category: 'substantivos' },
+    { romaji: 'jinja', japanese: '神社', portuguese: 'Santuário', category: 'substantivos' },
+    { romaji: 'tera', japanese: '寺', portuguese: 'Templo', category: 'substantivos' },
+    { romaji: 'hon', japanese: '本', portuguese: 'Livro', category: 'substantivos' },
+    { romaji: 'zasshi', japanese: '雑誌', portuguese: 'Revista', category: 'substantivos' },
+    { romaji: 'shinbun', japanese: '新聞', portuguese: 'Jornal', category: 'substantivos' },
+    { romaji: 'tegami', japanese: '手紙', portuguese: 'Carta', category: 'substantivos' },
+    { romaji: 'denwa', japanese: '電話', portuguese: 'Telefone', category: 'substantivos' },
+    { romaji: 'keitai', japanese: '携帯', portuguese: 'Celular', category: 'substantivos' },
+    { romaji: 'pasokon', japanese: 'パソコン', portuguese: 'Computador', category: 'substantivos' },
+    { romaji: 'taoru', japanese: 'タオル', portuguese: 'Toalha', category: 'substantivos' },
+    { romaji: 'isu', japanese: 'いす', portuguese: 'Cadeira', category: 'substantivos' },
+    { romaji: 'tsukue', japanese: 'つくえ', portuguese: 'Mesa', category: 'substantivos' },
+    { romaji: 'enpitsu', japanese: 'えんぴつ', portuguese: 'Lápis', category: 'substantivos' },
+    { romaji: 'pen', japanese: 'ペン', portuguese: 'Caneta', category: 'substantivos' },
+    { romaji: 'kami', japanese: 'かみ', portuguese: 'Papel', category: 'substantivos' },
+    { romaji: 'kasa', japanese: 'かさ', portuguese: 'Guarda-chuva', category: 'substantivos' },
+    { romaji: 'kutsu', japanese: 'くつ', portuguese: 'Sapato', category: 'substantivos' },
+    { romaji: 'fuku', japanese: 'ふく', portuguese: 'Roupa', category: 'substantivos' },
+    { romaji: 'megane', japanese: 'めがね', portuguese: 'Óculos', category: 'substantivos' },
+    { romaji: 'kaban', japanese: 'かばん', portuguese: 'Bolsa', category: 'substantivos' },
+    { romaji: 'kagi', japanese: 'かぎ', portuguese: 'Chave', category: 'substantivos' },
+    { romaji: 'tokei', japanese: 'とけい', portuguese: 'Relógio', category: 'substantivos' },
+    { romaji: 'boushi', japanese: 'ぼうし', portuguese: 'Chapéu', category: 'substantivos' },
+    { romaji: 'sora', japanese: 'そら', portuguese: 'Céu', category: 'substantivos' },
+    { romaji: 'kumo', japanese: 'くも', portuguese: 'Nuvem', category: 'substantivos' },
+    { romaji: 'tsuchi', japanese: 'つち', portuguese: 'Terra', category: 'substantivos' },
+    { romaji: 'mizuumi', japanese: 'みずうみ', portuguese: 'Lago', category: 'substantivos' },
+    { romaji: 'umi', japanese: 'うみ', portuguese: 'Oceano', category: 'substantivos' },
+    { romaji: 'hashi', japanese: 'はし', portuguese: 'Ponte', category: 'substantivos' },
+    { romaji: 'machi', japanese: 'まち', portuguese: 'Cidade', category: 'substantivos' },
+    { romaji: 'mura', japanese: 'むら', portuguese: 'Vila', category: 'substantivos' },
+    { romaji: 'kuni', japanese: 'くに', portuguese: 'País', category: 'substantivos' },
+    { romaji: 'sekai', japanese: 'せかい', portuguese: 'Mundo', category: 'substantivos' },
+    { romaji: 'uchuu', japanese: 'うちゅう', portuguese: 'Universo', category: 'substantivos' },
+    { romaji: 'hikari', japanese: 'ひかり', portuguese: 'Luz', category: 'substantivos' },
+    { romaji: 'yami', japanese: 'やみ', portuguese: 'Escuridão', category: 'substantivos' },
+    { romaji: 'kage', japanese: 'かげ', portuguese: 'Sombra', category: 'substantivos' },
+    { romaji: 'oto', japanese: 'おと', portuguese: 'Som', category: 'substantivos' },
+    { romaji: 'hibiki', japanese: 'ひびき', portuguese: 'Eco', category: 'substantivos' },
+    { romaji: 'niji', japanese: 'にじ', portuguese: 'Arco-íris', category: 'substantivos' },
+    { romaji: 'ishi', japanese: 'いし', portuguese: 'Pedra', category: 'substantivos' },
+    { romaji: 'iwa', japanese: 'いわ', portuguese: 'Rocha', category: 'substantivos' },
+    { romaji: 'suna', japanese: 'すな', portuguese: 'Areia', category: 'substantivos' },
+    { romaji: 'kusa', japanese: 'くさ', portuguese: 'Grama', category: 'substantivos' },
+    { romaji: 'tori', japanese: 'とり', portuguese: 'Pássaro', category: 'substantivos' },
+    { romaji: 'doubutsu', japanese: 'どうぶつ', portuguese: 'Animal', category: 'substantivos' },
+    { romaji: 'uma', japanese: 'うま', portuguese: 'Cavalo', category: 'substantivos' },
+    { romaji: 'ushi', japanese: 'うし', portuguese: 'Vaca', category: 'substantivos' },
+    { romaji: 'butasan', japanese: 'ぶたさん', portuguese: 'Porco', category: 'substantivos' },
+    { romaji: 'hitsuji', japanese: 'ひつじ', portuguese: 'Ovelha', category: 'substantivos' },
+    { romaji: 'tora', japanese: 'とら', portuguese: 'Tigre', category: 'substantivos' },
+    { romaji: 'raion', japanese: 'ライオン', portuguese: 'Leão', category: 'substantivos' },
+    { romaji: 'zou', japanese: 'ぞう', portuguese: 'Elefante', category: 'substantivos' },
+    { romaji: 'kirin', japanese: 'きりん', portuguese: 'Girafa', category: 'substantivos' },
+    { romaji: 'sarababa', japanese: 'さるばば', portuguese: 'Macaco', category: 'substantivos' },
+    { romaji: 'kamakiri', japanese: 'かまきり', portuguese: 'Louva-a-deus', category: 'substantivos' },
+    { romaji: 'cho', japanese: 'ちょう', portuguese: 'Borboleta', category: 'substantivos' },
+    { romaji: 'ga', japanese: 'が', portuguese: 'Mariposa', category: 'substantivos' },
+    { romaji: 'kaeru', japanese: 'かえる', portuguese: 'Sapo', category: 'substantivos' },
+    { romaji: 'mizutama', japanese: 'みずたま', portuguese: 'Bolas de água', category: 'substantivos' },
+    { romaji: 'kawauso', japanese: 'かわうそ', portuguese: 'Lontra', category: 'substantivos' },
+    { romaji: 'kame', japanese: 'かめ', portuguese: 'Tartaruga', category: 'substantivos' },
+    { romaji: 'same', japanese: 'さめ', portuguese: 'Tubarão', category: 'substantivos' },
+    { romaji: 'kamome', japanese: 'かもめ', portuguese: 'Gaivota', category: 'substantivos' },
+    { romaji: 'suzume', japanese: 'すずめ', portuguese: 'Pardal', category: 'substantivos' },
+    { romaji: 'washi', japanese: 'わし', portuguese: 'Águia', category: 'substantivos' },
+    { romaji: 'taka', japanese: 'たか', portuguese: 'Falcão', category: 'substantivos' },
+    { romaji: 'fukurou', japanese: 'ふくろう', portuguese: 'Coruja', category: 'substantivos' },
+    { romaji: 'kitsune', japanese: 'きつね', portuguese: 'Raposa', category: 'substantivos' },
+    { romaji: 'tanuki', japanese: 'たぬき', portuguese: 'Guaxinim', category: 'substantivos' },
+    { romaji: 'usagi', japanese: 'うさぎ', portuguese: 'Coelho', category: 'substantivos' },
+    { romaji: 'kaba', japanese: 'かば', portuguese: 'Hipopótamo', category: 'substantivos' },
+    { romaji: 'wani', japanese: 'わに', portuguese: 'Crocodilo', category: 'substantivos' },
+    { romaji: 'shika', japanese: 'しか', portuguese: 'Veado', category: 'substantivos' },
+    { romaji: 'saru', japanese: 'さる', portuguese: 'Macaco', category: 'substantivos' },
+    { romaji: 'ningen', japanese: 'にんげん', portuguese: 'Humano', category: 'substantivos' },
+    { romaji: 'seinen', japanese: 'せいねん', portuguese: 'Jovem', category: 'substantivos' },
+    { romaji: 'shoujo', japanese: 'しょうじょ', portuguese: 'Garota', category: 'substantivos' },
+    { romaji: 'shounen', japanese: 'しょうねん', portuguese: 'Garoto', category: 'substantivos' },
+    { romaji: 'onna', japanese: 'おんな', portuguese: 'Mulher', category: 'substantivos' },
+    { romaji: 'otoko', japanese: 'おとこ', portuguese: 'Homem', category: 'substantivos' },
+    { romaji: 'chichi', japanese: 'ちち', portuguese: 'Pai', category: 'substantivos' },
+    { romaji: 'haha', japanese: 'はは', portuguese: 'Mãe', category: 'substantivos' },
+    { romaji: 'ani', japanese: 'あに', portuguese: 'Irmão mais velho', category: 'substantivos' },
+    { romaji: 'ane', japanese: 'あね', portuguese: 'Irmã mais velha', category: 'substantivos' },
+    { romaji: 'otouto', japanese: 'おとうと', portuguese: 'Irmão mais novo', category: 'substantivos' },
+    { romaji: 'imouto', japanese: 'いもうと', portuguese: 'Irmã mais nova', category: 'substantivos' },
+    { romaji: 'yome', japanese: 'よめ', portuguese: 'Esposa', category: 'substantivos' },
+    { romaji: 'otto', japanese: 'おっと', portuguese: 'Marido', category: 'substantivos' },
+    { romaji: 'koibito', japanese: 'こいびと', portuguese: 'Namorado(a)', category: 'substantivos' },
+    { romaji: 'tomodachi', japanese: 'ともだち', portuguese: 'Amigo', category: 'substantivos' },
+    { romaji: 'sensei', japanese: 'せんせい', portuguese: 'Professor', category: 'substantivos' },
+    { romaji: 'kaisha', japanese: 'かいしゃ', portuguese: 'Empresa', category: 'substantivos' },
+    { romaji: 'shachou', japanese: 'しゃちょう', portuguese: 'Presidente (de empresa)', category: 'substantivos' },
+    { romaji: 'tenin', japanese: 'てんいん', portuguese: 'Vendedor', category: 'substantivos' },
+    { romaji: 'koumuin', japanese: 'こうむいん', portuguese: 'Funcionário público', category: 'substantivos' },
+    { romaji: 'daigaku', japanese: 'だいがく', portuguese: 'Universidade', category: 'substantivos' },
+    { romaji: 'gakusei', japanese: 'がくせい', portuguese: 'Estudante', category: 'substantivos' },
+    { romaji: 'seito', japanese: 'せいと', portuguese: 'Aluno', category: 'substantivos' },
+    { romaji: 'kyoushi', japanese: 'きょうし', portuguese: 'Professor (acadêmico)', category: 'substantivos' },
+    { romaji: 'shitsumon', japanese: 'しつもん', portuguese: 'Pergunta', category: 'substantivos' },
+    { romaji: 'kotae', japanese: 'こたえ', portuguese: 'Resposta', category: 'substantivos' },
+    { romaji: 'mondai', japanese: 'もんだい', portuguese: 'Problema', category: 'substantivos' },
+    { romaji: 'kanji', japanese: 'かんじ', portuguese: 'Ideograma', category: 'substantivos' },
+    { romaji: 'hiragana', japanese: 'ひらがな', portuguese: 'Hiragana', category: 'substantivos' },
+    { romaji: 'katakana', japanese: 'カタカナ', portuguese: 'Katakana', category: 'substantivos' },
+    { romaji: 'kotoba', japanese: 'ことば', portuguese: 'Palavra', category: 'substantivos' },
+    { romaji: 'bun', japanese: 'ぶん', portuguese: 'Frase', category: 'substantivos' },
+    { romaji: 'hon', japanese: 'ほん', portuguese: 'Livro', category: 'substantivos' },
+    { romaji: 'zasshi', japanese: 'ざっし', portuguese: 'Revista', category: 'substantivos' },
+    { romaji: 'shinbun', japanese: 'しんぶん', portuguese: 'Jornal', category: 'substantivos' },
+    { romaji: 'eigo', japanese: 'えいご', portuguese: 'Inglês (idioma)', category: 'substantivos' },
+    { romaji: 'nihongo', japanese: 'にほんご', portuguese: 'Japonês (idioma)', category: 'substantivos' },
+    { romaji: 'chikatetsu', japanese: 'ちかてつ', portuguese: 'Metrô', category: 'substantivos' },
+    { romaji: 'basu', japanese: 'バス', portuguese: 'Ônibus', category: 'substantivos' },
+    { romaji: 'jitensha', japanese: 'じてんしゃ', portuguese: 'Bicicleta', category: 'substantivos' },
+    { romaji: 'hikouki', japanese: 'ひこうき', portuguese: 'Avião', category: 'substantivos' },
+    { romaji: 'densha', japanese: 'でんしゃ', portuguese: 'Trem', category: 'substantivos' },
+    { romaji: 'kuruma', japanese: 'くるま', portuguese: 'Carro', category: 'substantivos' },
+    { romaji: 'takushi', japanese: 'タクシー', portuguese: 'Táxi', category: 'substantivos' },
+    { romaji: 'fune', japanese: 'ふね', portuguese: 'Navio', category: 'substantivos' },
+    { romaji: 'eki', japanese: 'えき', portuguese: 'Estação', category: 'substantivos' },
+    { romaji: 'kuukou', japanese: 'くうこう', portuguese: 'Aeroporto', category: 'substantivos' },
+    { romaji: 'michi', japanese: 'みち', portuguese: 'Caminho', category: 'substantivos' },
+    { romaji: 'tachi', japanese: 'たち', portuguese: 'Nós', category: 'pronomes' },
+    { romaji: 'anata', japanese: 'あなた', portuguese: 'Você', category: 'pronomes' },
+    { romaji: 'kare', japanese: 'かれ', portuguese: 'Ele', category: 'pronomes' },
+    { romaji: 'kanojo', japanese: 'かのじょ', portuguese: 'Ela', category: 'pronomes' },
+    { romaji: 'watashitachi', japanese: 'わたしたち', portuguese: 'Nós', category: 'pronomes' },
+    { romaji: 'anata-tachi', japanese: 'あなたたち', portuguese: 'Vocês', category: 'pronomes' },
+    { romaji: 'karera', japanese: 'かれら', portuguese: 'Eles', category: 'pronomes' },
+    { romaji: 'kanojora', japanese: 'かのじょら', portuguese: 'Elas', category: 'pronomes' },
+    { romaji: 'uchuu', japanese: 'うちゅう', portuguese: 'Espaço', category: 'substantivos' },
+    { romaji: 'hoshi', japanese: 'ほし', portuguese: 'Estrela', category: 'substantivos' },
+    { romaji: 'tsuki', japanese: 'つき', portuguese: 'Lua', category: 'substantivos' },
+    { romaji: 'taiyou', japanese: 'たいよう', portuguese: 'Sol', category: 'substantivos' },
+    { romaji: 'uchuu', japanese: 'うちゅう', portuguese: 'Universo', category: 'substantivos' },
+    { romaji: 'raion', japanese: 'ライオン', portuguese: 'Leão', category: 'substantivos' },
+    { romaji: 'zou', japanese: 'ぞう', portuguese: 'Elefante', category: 'substantivos' },
+    { romaji: 'kirin', japanese: 'きりん', portuguese: 'Girafa', category: 'substantivos' },
+    { romaji: 'saru', japanese: 'さる', portuguese: 'Macaco', category: 'substantivos' },
+    { romaji: 'neko', japanese: 'ねこ', portuguese: 'Gato', category: 'substantivos' },
+    { romaji: 'inu', japanese: 'いぬ', portuguese: 'Cachorro', category: 'substantivos' },
+    { romaji: 'tori', japanese: 'とり', portuguese: 'Pássaro', category: 'substantivos' },
+    { romaji: 'sakana', japanese: 'さかな', portuguese: 'Peixe', category: 'substantivos' },
+    { romaji: 'natsu', japanese: 'なつ', portuguese: 'Verão', category: 'substantivos' },
+    { romaji: 'aki', japanese: 'あき', portuguese: 'Outono', category: 'substantivos' },
+    { romaji: 'fuyu', japanese: 'ふゆ', portuguese: 'Inverno', category: 'substantivos' },
+    { romaji: 'haru', japanese: 'はる', portuguese: 'Primavera', category: 'substantivos' },
+    { romaji: 'taiyou', japanese: 'たいよう', portuguese: 'Sol', category: 'substantivos' },
+    { romaji: 'tsuki', japanese: 'つき', portuguese: 'Lua', category: 'substantivos' },
+    { romaji: 'hoshi', japanese: 'ほし', portuguese: 'Estrela', category: 'substantivos' },
+    { romaji: 'ame', japanese: 'あめ', portuguese: 'Chuva', category: 'substantivos' },
+    { romaji: 'kaze', japanese: 'かぜ', portuguese: 'Vento', category: 'substantivos' },
+    { romaji: 'yuki', japanese: 'ゆき', portuguese: 'Neve', category: 'substantivos' },
+    { romaji: 'kumo', japanese: 'くも', portuguese: 'Nuvem', category: 'substantivos' },
+    { romaji: 'sora', japanese: 'そら', portuguese: 'Céu', category: 'substantivos' },
+    { romaji: 'uchi', japanese: 'うち', portuguese: 'Casa', category: 'substantivos' },
+    { romaji: 'ie', japanese: 'いえ', portuguese: 'Casa', category: 'substantivos' },
+    { romaji: 'heya', japanese: 'へや', portuguese: 'Quarto', category: 'substantivos' },
+    { romaji: 'daidokoro', japanese: 'だいどころ', portuguese: 'Cozinha', category: 'substantivos' },
+    { romaji: 'ofuro', japanese: 'おふろ', portuguese: 'Banheiro', category: 'substantivos' },
+    { romaji: 'toire', japanese: 'トイレ', portuguese: 'Toalete', category: 'substantivos' },
+    { romaji: 'genkan', japanese: 'げんかん', portuguese: 'Entrada', category: 'substantivos' },
+    { romaji: 'niwa', japanese: 'にわ', portuguese: 'Jardim', category: 'substantivos' },
+    { romaji: 'kabe', japanese: 'かべ', portuguese: 'Parede', category: 'substantivos' },
+    { romaji: 'mado', japanese: 'まど', portuguese: 'Janela', category: 'substantivos' },
+    { romaji: 'doa', japanese: 'ドア', portuguese: 'Porta', category: 'substantivos' },
+    { romaji: 'kaidan', japanese: 'かいだん', portuguese: 'Escada', category: 'substantivos' },
+    { romaji: 'denki', japanese: 'でんき', portuguese: 'Luz elétrica', category: 'substantivos' },
+    { romaji: 'reizouko', japanese: 'れいぞうこ', portuguese: 'Geladeira', category: 'substantivos' },
+    { romaji: 'kagami', japanese: 'かがみ', portuguese: 'Espelho', category: 'substantivos' },
+    { romaji: 'isu', japanese: 'いす', portuguese: 'Cadeira', category: 'substantivos' },
+    { romaji: 'tsukue', japanese: 'つくえ', portuguese: 'Mesa', category: 'substantivos' },
+    { romaji: 'sofá', japanese: 'ソファ', portuguese: 'Sofá', category: 'substantivos' },
+    { romaji: 'beddo', japanese: 'ベッド', portuguese: 'Cama', category: 'substantivos' },
+    { romaji: 'kane', japanese: 'かね', portuguese: 'Dinheiro', category: 'substantivos' },
+    { romaji: 'okane', japanese: 'おかね', portuguese: 'Dinheiro', category: 'substantivos' },
+    { romaji: 'ginkou', japanese: 'ぎんこう', portuguese: 'Banco', category: 'substantivos' },
+    { romaji: 'kippu', japanese: 'きっぷ', portuguese: 'Bilhete', category: 'substantivos' },
+    { romaji: 'ryokou', japanese: 'りょこう', portuguese: 'Viagem', category: 'substantivos' },
+    { romaji: 'shashin', japanese: 'しゃしん', portuguese: 'Foto', category: 'substantivos' },
+    { romaji: 'eiga', japanese: 'えいが', portuguese: 'Filme', category: 'substantivos' },
+    { romaji: 'ongaku', japanese: 'おんがく', portuguese: 'Música', category: 'substantivos' },
+    { romaji: 'gekijou', japanese: 'げきじょう', portuguese: 'Teatro', category: 'substantivos' },
+    { romaji: 'ensou', japanese: 'えんそう', portuguese: 'Performance', category: 'substantivos' },
+    { romaji: 'geijutsu', japanese: 'げいじゅつ', portuguese: 'Arte', category: 'substantivos' },
+    { romaji: 'bijutsu', japanese: 'びじゅつ', portuguese: 'Artes visuais', category: 'substantivos' },
+    { romaji: 'kassai', japanese: 'かっさい', portuguese: 'Aplauso', category: 'substantivos' },
+    { romaji: 'shukudai', japanese: 'しゅくだい', portuguese: 'Dever de casa', category: 'substantivos' },
+    { romaji: 'benkyou', japanese: 'べんきょう', portuguese: 'Estudo', category: 'substantivos' },
+    { romaji: 'jisho', japanese: 'じしょ', portuguese: 'Dicionário', category: 'substantivos' },
+    { romaji: 'kanji', japanese: 'かんじ', portuguese: 'Ideograma', category: 'substantivos' },
+    { romaji: 'hiragana', japanese: 'ひらがな', portuguese: 'Hiragana', category: 'substantivos' },
+    { romaji: 'katakana', japanese: 'カタカナ', portuguese: 'Katakana', category: 'substantivos' },
+    { romaji: 'tango', japanese: 'たんご', portuguese: 'Vocabulário', category: 'substantivos' },
+    { romaji: 'renshuu', japanese: 'れんしゅう', portuguese: 'Prática', category: 'substantivos' },
+    { romaji: 'kurasu', japanese: 'クラス', portuguese: 'Classe', category: 'substantivos' },
+    { romaji: 'jugyou', japanese: 'じゅぎょう', portuguese: 'Aula', category: 'substantivos' },
+    { romaji: 'yume', japanese: 'ゆめ', portuguese: 'Sonho', category: 'substantivos' },
+    { romaji: 'genjitsu', japanese: 'げんじつ', portuguese: 'Realidade', category: 'substantivos' },
+    { romaji: 'kibou', japanese: 'きぼう', portuguese: 'Esperança', category: 'substantivos' },
+    { romaji: 'yuuutsu', japanese: 'ゆううつ', portuguese: 'Melancolia', category: 'substantivos' },
+    { romaji: 'kando', japanese: 'かんどう', portuguese: 'Emoção', category: 'substantivos' },
+    { romaji: 'kanjou', japanese: 'かんじょう', portuguese: 'Sentimento', category: 'substantivos' },
+    { romaji: 'hikari', japanese: 'ひかり', portuguese: 'Luz', category: 'substantivos' },
+    { romaji: 'kage', japanese: 'かげ', portuguese: 'Sombra', category: 'substantivos' },
+    { romaji: 'yami', japanese: 'やみ', portuguese: 'Escuridão', category: 'substantivos' },
+    { romaji: 'kibou', japanese: 'きぼう', portuguese: 'Esperança', category: 'substantivos' },
+    { romaji: 'ai', japanese: 'あい', portuguese: 'Amor', category: 'substantivos' },
+    { romaji: 'yuuki', japanese: 'ゆうき', portuguese: 'Coragem', category: 'substantivos' },
+    { romaji: 'heiwa', japanese: 'へいわ', portuguese: 'Paz', category: 'substantivos' },
+    { romaji: 'shiawase', japanese: 'しあわせ', portuguese: 'Felicidade', category: 'substantivos' },
+    { romaji: 'kanashimi', japanese: 'かなしみ', portuguese: 'Tristeza', category: 'substantivos' },
+    { romaji: 'akanbou', japanese: 'あかんぼう', portuguese: 'Bebê', category: 'substantivos' },
+    { romaji: 'kodomo', japanese: 'こども', portuguese: 'Criança', category: 'substantivos' },
+    { romaji: 'otona', japanese: 'おとな', portuguese: 'Adulto', category: 'substantivos' },
+    { romaji: 'kareshi', japanese: 'かれし', portuguese: 'Namorado', category: 'substantivos' },
+    { romaji: 'kanojo', japanese: 'かのじょ', portuguese: 'Namorada', category: 'substantivos' },
+    { romaji: 'shachou', japanese: 'しゃちょう', portuguese: 'Presidente (de empresa)', category: 'substantivos' },
+    { romaji: 'buchou', japanese: 'ぶちょう', portuguese: 'Chefe de departamento', category: 'substantivos' },
+    { romaji: 'kaisha', japanese: 'かいしゃ', portuguese: 'Empresa', category: 'substantivos' },
+    { romaji: 'jisho', japanese: 'じしょ', portuguese: 'Dicionário', category: 'substantivos' }
+];
+        
+        const checkedWords = JSON.parse(localStorage.getItem('checkedWords')) || {};
+        const wordList = document.getElementById('wordList');
+        const backBtn = document.getElementById('back-btn');
+
+        function renderHistory() {
+            const learnedWords = words.filter(word => checkedWords[word.romaji]);
+            wordList.innerHTML = '';
+            learnedWords.forEach(word => {
+                const wordCard = document.createElement('div');
+                wordCard.className = 'word-card';
+                wordCard.innerHTML = `
+                    <div class="romaji">${word.romaji}</div>
+                    <div class="japanese">${word.japanese}</div>
+                    <div class="portuguese">${word.portuguese}</div>
+                `;
+                wordList.appendChild(wordCard);
+            });
+        }
+
+        backBtn.addEventListener('click', () => window.history.back());
+
+        renderHistory();
+    </script>
+</body>
+</html>
