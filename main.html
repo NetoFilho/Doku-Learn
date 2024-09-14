@@ -260,6 +260,48 @@
                 font-size: 18px;
             }
         }
+
+        #privacyPolicy {
+    color: #FF4B3E;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Estilos para o diálogo */
+.dialog {
+    display: none; /* Inicialmente oculto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+.dialog-content h2 {
+    margin-top: 0;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #FF4B3E;
+}
     </style>
 </head>
 <body>
@@ -275,6 +317,14 @@
                 <button onclick="searchWords()"><i class="fas fa-search"></i></button>
             </div>
         </header>
+
+        <div id="privacyDialog" class="dialog">
+        <div class="dialog-content">
+            <span class="close-button" id="closeDialog">&times;</span>
+            <h2>Política de Privacidade</h2>
+            <p>Estamos comprometidos com a sua privacidade. Para saber mais sobre como usamos cookies e como protegemos suas informações, leia nossa <a href="privacy.html">Política de Privacidade</a>.</p>
+        </div>
+    </div>
 
         <div class="category-filter" id="categoryFilter"></div>
 
@@ -557,6 +607,32 @@ function playAudio(index) {
         // Inicializa a lista de palavras filtradas
         filteredWords = effectiveWords;
         renderWords(filteredWords);
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Seleciona o elemento que abre o diálogo
+    const privacyPolicy = document.getElementById('privacyPolicy');
+    // Seleciona o diálogo e o botão de fechar
+    const privacyDialog = document.getElementById('privacyDialog');
+    const closeDialog = document.getElementById('closeDialog');
+
+    // Função para abrir o diálogo
+    privacyPolicy.addEventListener('click', function() {
+        privacyDialog.style.display = 'flex';
+    });
+
+    // Função para fechar o diálogo
+    closeDialog.addEventListener('click', function() {
+        privacyDialog.style.display = 'none';
+    });
+
+    // Fecha o diálogo quando clicar fora da área de conteúdo
+    window.addEventListener('click', function(event) {
+        if (event.target === privacyDialog) {
+            privacyDialog.style.display = 'none';
+        }
+    });
+});
+
     </script>
 </body>
 </html>
