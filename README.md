@@ -15,7 +15,7 @@ Doku-Learn é uma plataforma educacional simples projetada para ajudar os usuár
 
 ### Site
 
-Para acessar a versão web do Doku-Learn, basta visitar [dokulearn.com](http://dokulearn.com).
+Para acessar a versão web do Doku-Learn, basta visitar (https://doku-learn.netlify.app).
 
 ### APK
 
@@ -46,7 +46,7 @@ Após instalar o aplicativo ou acessar o site, você pode começar a usar as seg
 ## Dependências
 
 - **Google AdSense**: Para exibição de anúncios.
-- **Speech-to-Text**: Para funcionalidades de reconhecimento de fala.
+- **Responsivevoice**: Para funcionalidades de reconhecimento de fala.
 
 Certifique-se de que estas dependências estão configuradas corretamente para o pleno funcionamento do site e do aplicativo.
 
