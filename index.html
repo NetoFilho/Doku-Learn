@@ -43,8 +43,8 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Remove o efeito de destaque ao tocar */
-            touch-action: manipulation; /* Permite manipulações e não zoom */
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
        body {
@@ -52,9 +52,9 @@
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
-            -webkit-tap-highlight-color: transparent; /* Remove o efeito de destaque ao tocar */
-            user-select: auto; /* Desativa a seleção de texto */
-            touch-action: manipulation; /* Evita zoom no toque prolongado */
+            -webkit-tap-highlight-color: transparent;
+            user-select: auto;
+            touch-action: manipulation;
         }
 
         .app-container {
@@ -80,7 +80,6 @@
             left: 0;
             overflow: hidden;
             white-space: nowrap;
-            border-bottom: 1px solid var(--checked-color);
         }
 
         .search-bar {
@@ -278,72 +277,72 @@
             }
         }
 
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
-}
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
 
-.dialog {
-    display: block; /* Inicialmente oculto */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    align-items: flex-end;
-    justify-content: center;
-}
+        .dialog {
+            display: block;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: flex-end;
+            justify-content: center;
+        }
 
-.dialog.show {
-    display: flex;
-}
+        .dialog.show {
+            display: flex;
+        }
 
-.dialog-content {
-    background: #FFFFFF;
-    border-radius: 8px 8px 0 0;
-    padding: 20px;
-    width: 100%;
-    max-width: 600px;
-    position: relative;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-    animation: slideUp 0.3s ease-out forwards;
-}
+        .dialog-content {
+            background: #FFFFFF;
+            border-radius: 8px 8px 0 0;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease-out forwards;
+        }
 
-.dialog-content h2 {
-    margin-top: 0;
-    color: #333;
-}
+        .dialog-content h2 {
+            margin-top: 0;
+            color: #333;
+        }
 
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: #FF4B3E;
-    background: none;
-    border: none;
-    padding: 0;
-    transition: color 0.3s ease;
-}
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #FF4B3E;
+            background: none;
+            border: none;
+            padding: 0;
+            transition: color 0.3s ease;
+        }
 
-.close-button:hover {
-    color: #FF1100;
-}
+        .close-button:hover {
+            color: #FF1100;
+        }
 
-@media (min-width: 768px) {
-    .dialog-content {
-        width: 80%;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-}
+        @media (min-width: 768px) {
+            .dialog-content {
+                width: 80%;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+        }
     </style>
 </head>
 <body>
