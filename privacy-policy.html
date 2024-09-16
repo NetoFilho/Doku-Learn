@@ -78,10 +78,10 @@
 </head>
 <body>
     <nav class="nav">
-        <a href="#home" onclick="scrollToSection('intro')">Home</a>
+        <a href="#intro" onclick="scrollToSection('intro')">Home</a>
         <a href="#cookies" onclick="scrollToSection('cookies')">Cookies</a>
-        <a href="#contact" onclick="scrollToSection('contato')">Contato</a>
-        <a href="#Ads" onclick="scrollToSection('ads')">Anumcios</a>
+        <a href="#contato" onclick="scrollToSection('contato')">Contato</a>
+        <a href="#ads" onclick="scrollToSection('ads')">Anúncios</a>
     </nav>
     <div class="container">
         <header>
@@ -180,7 +180,7 @@
                 <p>Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou nossas práticas de dados, entre em contato conosco:</p>
                 <ul>
                     <li><strong>E-mail:</strong> <a href="mailto:kbam2024br@gmail.com">kbam2024br@gmail.com</a></li>
-                    <li><strong>Endereço:</strong> Somos um Grupo localizado em Salvador, BA, Brasil</li>
+                                        <li><strong>Endereço:</strong> Somos um Grupo localizado em Salvador, BA, Brasil</li>
                     <li><strong>Telefone:</strong> +55 73 99859-0156</li>
                 </ul>
             </section>
@@ -193,7 +193,7 @@
 
         <script>
             function scrollToSection(sectionClass) {
-                document.querySelector(`.${sectionClass}).scrollIntoView({ behavior: "smooth" });
+                document.querySelector(`.${sectionClass}`).scrollIntoView({ behavior: "smooth" });
             }
         </script>
     </div>
