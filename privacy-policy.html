@@ -78,9 +78,10 @@
 </head>
 <body>
     <nav class="nav">
-        <a href="#home">Home</a>
-        <a href="#about">Sobre</a>
-        <a href="#contact">Contato</a>
+        <a href="#home" onclick="scrollToSection('intro')">Home</a>
+        <a href="#cookies" onclick="scrollToSection('cookies')">Cookies</a>
+        <a href="#contact" onclick="scrollToSection('contato')">Contato</a>
+        <a href="#Ads" onclick="scrollToSection('ads')">Anumcios</a>
     </nav>
     <div class="container">
         <header>
@@ -89,12 +90,12 @@
         </header>
 
         <main>
-            <section>
+            <section class="intro">
                 <h2>1. Introdução</h2>
                 <p>Bem-vindo ao Doku-Learn. Nós valorizamos sua privacidade e estamos comprometidos em proteger suas informações pessoais. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações quando você usa nosso website e aplicativo móvel (coletivamente, os "Serviços"). Por favor, leia atentamente esta política. Ao usar nossos Serviços, você concorda com as práticas descritas nesta Política de Privacidade.</p>
             </section>
 
-            <section>
+            <section class="dados">
                 <h2>2. Informações que Coletamos</h2>
                 <h3>2.1 Dados Fornecidos pelo Usuário</h3>
                 <ul>
@@ -112,7 +113,7 @@
                 </ul>
             </section>
 
-            <section>
+            <section class="cookies">
                 <h2>3. Uso de Cookies e Tecnologias Similares</h2>
                 <p>Utilizamos cookies e tecnologias de rastreamento similares para melhorar sua experiência em nosso site. Isso nos ajuda a:</p>
                 <ul>
@@ -124,7 +125,7 @@
                 <p>Você pode gerenciar suas preferências de cookies através das configurações do seu navegador.</p>
             </section>
 
-            <section>
+            <section class="infor">
                 <h2>4. Como Usamos Suas Informações</h2>
                 <p>Utilizamos suas informações para:</p>
                 <ul>
@@ -136,7 +137,7 @@
                 </ul>
             </section>
 
-            <section>
+            <section class="send">
                 <h2>5. Compartilhamento de Informações</h2>
                 <p>Podemos compartilhar suas informações com:</p>
                 <ul>
@@ -147,7 +148,7 @@
                 <p>Não vendemos suas informações pessoais a terceiros.</p>
             </section>
 
-            <section>
+            <section class="direitos">
                 <h2>6. Seus Direitos e Escolhas</h2>
                 <p>Você tem o direito de:</p>
                 <ul>
@@ -158,7 +159,7 @@
                 </ul>
             </section>
 
-            <section>
+            <section class="privacy">
                 <h2>7. Segurança de Dados</h2>
                 <p>Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações contra acesso não autorizado, alteração, divulgação ou destruição.</p>
             </section>
@@ -168,13 +169,13 @@
                 <p>Podemos atualizar esta Política de Privacidade periodicamente. A versão mais recente estará sempre disponível em nosso site.</p>
             </section>
 
-            <section>
+            <section class="ads">
                 <h2>9. Anúncios Personalizados</h2>
                 <p>Usamos serviços de publicidade de terceiros, incluindo o Google AdSense, para exibir anúncios personalizados em nosso site. Esses serviços podem usar cookies e tecnologias semelhantes para coletar informações sobre suas visitas ao nosso site e outros sites para fornecer anúncios mais relevantes.</p>
                 <p>Você pode optar por não participar da publicidade personalizada do Google visitando <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">Configurações de Anúncios do Google</a>.</p>
             </section>
 
-            <section>
+            <section class="contato">
                 <h2>10. Contato</h2>
                 <p>Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade ou nossas práticas de dados, entre em contato conosco:</p>
                 <ul>
@@ -189,6 +190,12 @@
             <p>Agradecemos por usar o Doku-Learn. Estamos comprometidos em proteger sua privacidade e fornecer uma experiência de aprendizagem segura e agradável.</p>
             <p>&copy; 2024 Doku-Learn. Todos os direitos reservados.</p>
         </footer>
+
+        <script>
+            function scrollToSection(sectionClass) {
+                document.querySelector(`.${sectionClass}).scrollIntoView({ behavior: "smooth" });
+            }
+        </script>
     </div>
 </body>
 </html>
