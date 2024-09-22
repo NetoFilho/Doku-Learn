@@ -186,6 +186,7 @@
         }
 
         .japanese {
+            display: none;
             font-size: 24px;
             color: var(--primary-color);
             margin-bottom: 10px;
@@ -194,6 +195,7 @@
         }
 
         .word-card.checked .japanese {
+            display: block;
             color: var(--accent-color);
         }
 
@@ -388,7 +390,7 @@
     
         <script src="palavras.js"></script>
         <script>
-            const wordList = document.getElementById('wordList');
+     const wordList = document.getElementById('wordList');
             const categoryFilter = document.getElementById('categoryFilter');
             let currentCategory = 'todas';
             let checkedWords = JSON.parse(localStorage.getItem('checkedWords')) || {};
@@ -401,63 +403,66 @@
             const effectiveWords = (typeof words !== 'undefined' && words.length > 0) ? words : [
                 { romaji: 'Undefined', japanese: 'こんにちは', portuguese: 'Undefined', category: 'Refresh Page' }
             ];
-    
+            
             function renderWords(wordsToRender) {
-                const endIndex = Math.min(currentIndex + wordsPerPage, wordsToRender.length);
-                const wordsSlice = wordsToRender.slice(currentIndex, endIndex);
-    
-                const fragment = document.createDocumentFragment();
-    
-                wordsSlice.forEach((word, localIndex) => {
-                    const globalIndex = currentIndex + localIndex;
-    
-                    const wordCard = document.createElement('div');
-                    wordCard.className = `word-card ${checkedWords[word.romaji] ? 'checked' : ''}`;
-                    wordCard.innerHTML = `
-                        <div class="romaji" id="romaji-${globalIndex}">
-                            ${word.romaji}
-                            <button class="audio-btn" onclick="playAudio(${globalIndex})">
-                                <i class="fas fa-volume-up"></i>
-                            </button>
-                            <button class="icon-btn" onclick="toggleFavorite('${word.romaji}', this)">
-                                <i class="fas ${favoriteWords[word.romaji] ? 'fa-heart' : 'fa-heart-broken'}"></i>
-                            </button>
-                            <button class="icon-btn" onclick="shareWord('${word.romaji}')">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                        </div>
-                        <div class="japanese" id="japanese-${globalIndex}" translate="no">${word.japanese}</div>
-                        <div class="portuguese" id="portuguese-${globalIndex}">${checkedWords[word.romaji] ? word.portuguese : ''}</div>
-                        <button class="show-btn" onclick="toggleTranslation('${word.romaji}', this)">
-                            ${checkedWords[word.romaji] ? 'Ocultar Tradução' : 'Mostrar Tradução'}
+            const endIndex = Math.min(currentIndex + wordsPerPage, wordsToRender.length);
+            const wordsSlice = wordsToRender.slice(currentIndex, endIndex);
+
+            const fragment = document.createDocumentFragment();
+
+            wordsSlice.forEach((word, localIndex) => {
+                const globalIndex = currentIndex + localIndex;
+
+                const wordCard = document.createElement('div');
+                wordCard.className = `word-card ${checkedWords[word.romaji] ? 'checked' : ''}`;
+                wordCard.innerHTML = `
+                    <div class="romaji" id="romaji-${globalIndex}">
+                        ${word.romaji}
+                        <button class="audio-btn" onclick="playAudio(${globalIndex})">
+                            <i class="fas fa-volume-up"></i>
                         </button>
-                    `;
-                    fragment.appendChild(wordCard);
-                });
-    
-                wordList.appendChild(fragment);
+                        <button class="icon-btn" onclick="toggleFavorite('${word.romaji}', this)">
+                            <i class="fas ${favoriteWords[word.romaji] ? 'fa-heart' : 'fa-heart-broken'}"></i>
+                        </button>
+                        <button class="icon-btn" onclick="shareWord('${word.romaji}')">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                    <div class="japanese" id="japanese-${globalIndex}" translate="no">${word.japanese}</div>
+                    <div class="portuguese" id="portuguese-${globalIndex}">${checkedWords[word.romaji] ? word.portuguese : ''}</div>
+                    <button class="show-btn" onclick="toggleTranslation('${word.romaji}', this)">
+                        ${checkedWords[word.romaji] ? 'Ocultar Tradução' : 'Mostrar Tradução'}
+                    </button>
+                `;
+                fragment.appendChild(wordCard);
+            });
+
+            wordList.appendChild(fragment);
+        }
+
+        function toggleTranslation(romaji, button) {
+            const wordCard = button.closest('.word-card');
+            const japaneseElement = wordCard.querySelector('.japanese');
+            const portugueseElement = wordCard.querySelector('.portuguese');
+            const word = effectiveWords.find(w => w.romaji === romaji);
+            
+            if (!checkedWords[romaji]) {
+                japaneseElement.style.display = 'block';
+                portugueseElement.textContent = word.portuguese;
+                button.textContent = 'Ocultar Tradução';
+                wordCard.classList.add('checked');
+                checkedWords[romaji] = true;
+            } else {
+                japaneseElement.style.display = 'none';
+                portugueseElement.textContent = '';
+                button.textContent = 'Mostrar Tradução';
+                wordCard.classList.remove('checked');
+                delete checkedWords[romaji];
             }
-    
-            function toggleTranslation(romaji, button) {
-                const wordCard = button.closest('.word-card');
-                const portugueseElement = wordCard.querySelector('.portuguese');
-                const word = effectiveWords.find(w => w.romaji === romaji);
-                
-                if (!checkedWords[romaji]) {
-                    portugueseElement.textContent = word.portuguese;
-                    button.textContent = 'Ocultar Tradução';
-                    wordCard.classList.add('checked');
-                    checkedWords[romaji] = true;
-                } else {
-                    portugueseElement.textContent = '';
-                    button.textContent = 'Mostrar Tradução';
-                    wordCard.classList.remove('checked');
-                    delete checkedWords[romaji];
-                }
-                localStorage.setItem('checkedWords', JSON.stringify(checkedWords));
-            }
-    
-            function toggleFavorite(romaji, button) {
+            localStorage.setItem('checkedWords', JSON.stringify(checkedWords));
+        }
+
+function toggleFavorite(romaji, button) {
                 if (favoriteWords[romaji]) {
                     delete favoriteWords[romaji];
                 } else {
@@ -680,6 +685,7 @@
                     }
                 });
             });
-        </script>
+            
+      </script>
     </body>
     </html>
