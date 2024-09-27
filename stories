@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aprenda japones lendo contos em japones com reproducao de voz, traducao e romaji!">
+    <title>Doku Learn - Contos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&family=Noto+Serif+JP&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=tkoDczsm"></script>
+    <style>
+        :root {
+            --primary-color: #FF4B3E;
+            --secondary-color: #254E70;
+            --accent-color: #FECA47;
+            --background-color: #F4F4F4;
+            --text-color: #333;
+            --card-background: #FFFFFF;
+            --checked-color: #4A90E2;
+        }
+
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .app-container {
+            padding-top: 60px;
+            max-width: 1200px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .story-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .story-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .story-title {
+            font-family: 'Noto Serif JP', serif;
+            color: var(--secondary-color);
+            margin-top: 0;
+        }
+
+        .book-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        header {
+            z-index: 1000;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            box-sizing: border-box;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+            padding: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .book {
+            background-color: var(--card-background);
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .story-content {
+            font-family: 'Noto Serif JP', serif;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .romaji, .translation {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            z-index: 1001;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .play-btn {
+            right: 20px;
+            background-color: var(--primary-color);
+        }
+
+        .toggle-btn {
+            left: 20px;
+            background-color: var(--accent-color);
+        }
+
+        .floating-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .play-btn:hover {
+            background-color: #FF6B5E;
+        }
+
+        .toggle-btn:hover {
+            background-color: #FFD467;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding-top: 80px;
+            }
+
+            .book {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .floating-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <button class="icon-btn" onclick="window.location.href='index.html'">
+                <i class="material-icons">arrow_back</i>
+            </button>
+            <h1>Histórias Japonesas</h1>
+        </header>
+
+        <div class="story-list">
+            <div class="story-card" data-story="story1">
+                <h2 class="story-title">桃太郎</h2>
+                <p>Momotaro (O Menino Pêssego)</p>
+            </div>
+            <div class="story-card" data-story="story2">
+                <h2 class="story-title">浦島太郎</h2>
+                <p>Urashima Taro</p>
+            </div>
+            <div class="story-card" data-story="story3">
+                <h2 class="story-title">かぐや姫</h2>
+                <p>Kaguya-hime (A Princesa Kaguya)</p>
+            </div>
+        </div>
+
+        <div id="bookContainer" class="book-container">
+            <div class="book">
+                <span class="close-btn">&times;</span>
+                <h2 id="storyTitle" class="story-title"></h2>
+                <div id="storyContent" class="story-content"></div>
+                <p id="romaji" class="romaji"></p>
+                <p id="translation" class="translation"></p>
+            </div>
+        </div>
+
+        <button id="playBtn" class="floating-btn play-btn">Reproduzir</button>
+        <button id="toggleBtn" class="floating-btn toggle-btn">Romaji/Tradução</button>
+    </div>
+
+    <script>
+        const stories = {
+            story1: {
+                title: "桃太郎",
+                content: "むかしむかし、あるところにおじいさんとおばあさんが住んでいました。ある日、おばあさんが川で洗濯をしていると、大きな桃が流れてきました。",
+                romaji: "Mukashi mukashi, aru tokoro ni ojiisan to obaasan ga sunde imashita. Aru hi, obaasan ga kawa de sentaku wo shite iru to, ookina momo ga nagarete kimashita.",
+                translation: "Há muito tempo, em um certo lugar, viviam um velho e uma velha. Um dia, enquanto a velha estava lavando roupas no rio, um grande pêssego veio flutuando."
+            },
+            story2: {
+                title: "浦島太郎",
+                content: "むかしむかし、浦島太郎という若い漁師がいました。ある日、浜辺で子供たちが亀をいじめているのを見つけました。",
+                romaji: "Mukashi mukashi, Urashima Tarou to iu wakai ryoushi ga imashita. Aru hi, hamabe de kodomo-tachi ga kame wo ijimete iru no wo mitsukemashita.",
+                translation: "Há muito tempo, havia um jovem pescador chamado Urashima Taro. Um dia, ele encontrou algumas crianças maltratando uma tartaruga na praia."
+            },
+            story3: {
+                title: "かぐや姫",
+                content: "むかしむかし、ある竹取りのおじいさんが、光る竹を見つけました。その中から小さな女の子が現れました。",
+                romaji: "Mukashi mukashi, aru taketori no ojiisan ga, hikaru take wo mitsukemashita. Sono naka kara chiisana onna no ko ga arawaremashita.",
+                translation: "Há muito tempo, um velho cortador de bambu encontrou um bambu brilhante. De dentro dele, apareceu uma pequena menina."
+            }
+        };
+
+        const storyCards = document.querySelectorAll('.story-card');
+        const bookContainer = document.getElementById('bookContainer');
+        const storyTitle = document.getElementById('storyTitle');
+        const storyContent = document.getElementById('storyContent');
+        const romaji = document.getElementById('romaji');
+        const translation = document.getElementById('translation');
+        const closeBtn = document.querySelector('.close-btn');
+        const playBtn = document.getElementById('playBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+
+        let currentStory = null;
+
+        storyCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const storyId = card.getAttribute('data-story');
+                currentStory = stories[storyId];
+                storyTitle.textContent = currentStory.title;
+                storyContent.textContent = currentStory.content;
+                romaji.textContent = currentStory.romaji;
+                translation.textContent = currentStory.translation;
+                bookContainer.style.display = 'block';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => {
+            bookContainer.style.display = 'none';
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (currentStory) {
+                responsiveVoice.speak(currentStory.content, "Japanese Female");
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+            romaji.style.display = romaji.style.display === 'none' ? 'block' : 'none';
+            translation.style.display = translation.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
+</body>
+</html>
